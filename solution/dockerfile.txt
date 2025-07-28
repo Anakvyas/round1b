@@ -1,0 +1,23 @@
+FROM --platform=linux/amd64 python:3.9-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies (minimal for PDF processing)
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the solution script
+COPY predict.py .
+
+# Create input and output directories
+RUN mkdir -p /app/input /app/output
+
+# Set the entrypoint to match Round 1A structure
+ENTRYPOINT ["python", "predict.py", "/app/input", "/app/output"]
